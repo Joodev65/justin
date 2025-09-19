@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portofolio - JXustinNwi</title>
+  <style>
+    /* ==== Global Style ==== */
+    * {margin: 0; padding: 0; box-sizing: border-box;}
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+    a {text-decoration: none; color: inherit;}
+
+    /* ==== Header ==== */
+    header {
+      text-align: center;
+      padding: 100px 20px 60px;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+    }
+    header img {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      margin-bottom: 15px;
+      border: 3px solid #00d4ff;
+    }
+    header h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    header p {
+      color: #94a3b8;
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+    header .bio {
+      color: #00d4ff;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    /* ==== Navbar ==== */
+    nav {
+      background: #1e293b;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 14px;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    }
+    nav a {
+      color: #e6edf3;
+      margin: 0 18px;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+    nav a:hover {color: #00d4ff;}
+
+    /* ==== Sections ==== */
+    section {
+      max-width: 1100px;
+      margin: auto;
+      padding: 80px 20px;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 1s ease;
+    }
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 50px;
+      font-size: 2.2rem;
+      color: #00d4ff;
+      font-weight: 700;
+    }
+
+    /* ==== Card Grid ==== */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    .card {
+      background: #161b22;
+      padding: 25px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      transition: transform 0.5s, box-shadow 0.5s;
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    .card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 12px 25px rgba(0,212,255,0.5);
+    }
+    .card h3 {margin-bottom: 12px;}
+    .price {color: #ff4d6d; font-weight: bold;}
+
+    /* ==== Button ==== */
+    .btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      background: #00d4ff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover {background: #00aacc;}
+
+    /* ==== Explanation Box ==== */
+    .explanation {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      background: #0f172a;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+      animation: fadeIn 0.8s ease;
+    }
+    pre {
+      background: #111827;
+      padding: 10px;
+      border-radius: 8px;
+      color: #0ff;
+      overflow-x: auto;
+    }
+
+    /* ==== Contact ==== */
+    .wa-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      background: #25D366;
+      color: #fff;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .wa-btn:hover {background: #1ebd5a;}
+
+    /* ==== Footer ==== */
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #1e293b;
+      color: #94a3b8;
+      margin-top: 60px;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.95);}
+      to {opacity: 1; transform: scale(1);}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <img src="https://f.top4top.io/p_35488ctwt1.png" alt="Profile">
+    <h1>JXustinNwi</h1>
+    <p>Web Developer | Programmer | Creator</p>
+    <p class="bio">Umur 13 Tahun (2012) | Kelas 8 SMP 2</p>
+  </header>
+
+  <!-- Navbar -->
+  <nav>
+    <a href="#skills">Skills</a>
+    <a href="#produk">Produk</a>
+    <a href="#kontak">Kontak</a>
+  </nav>
+
+  <!-- Skills -->
+  <section id="skills">
+    <h2>Skills</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>HTML & CSS</h3>
+        <button class="btn" onclick="toggleExplanation(this)">Lihat Penjelasan</button>
+        <div class="explanation">
+          <p><b>Penjelasan:</b> HTML membuat struktur website, CSS mempercantik tampilannya.</p>
+          <pre>
+&lt;h1&gt;Halo Dunia&lt;/h1&gt;
+&lt;style&gt;
+  h1 { color: blue; }
+&lt;/style&gt;
+          </pre>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Java</h3>
+        <button class="btn" onclick="toggleExplanation(this)">Lihat Penjelasan</button>
+        <div class="explanation">
+          <p><b>Penjelasan:</b> Java adalah bahasa pemrograman OOP untuk aplikasi dan Android.</p>
+          <pre>
+public class Halo {
+  public static void main(String[] args) {
+    System.out.println("Halo Dunia!");
+  }
+}
+          </pre>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Node.js</h3>
+        <button class="btn" onclick="toggleExplanation(this)">Lihat Penjelasan</button>
+        <div class="explanation">
+          <p><b>Penjelasan:</b> Node.js digunakan untuk membuat server dan API.</p>
+          <pre>
+// app.js
+const http = require("http");
+http.createServer((req, res) => {
+  res.end("Halo dari Node.js!");
+}).listen(3000);
+          </pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Produk -->
+  <section id="produk">
+    <h2>Produk</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Murbug</h3>
+        <p class="price">Rp 25.000</p>
+      </div>
+      <div class="card">
+        <h3>PT Murban</h3>
+        <p class="price">Rp 50.000</p>
+      </div>
+      <div class="card">
+        <h3>PT JXustinNwi-Official</h3>
+        <p class="price">Rp 150.000</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Kontak -->
+  <section id="kontak">
+    <h2>Kontak</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>WhatsApp</h3>
+        <a class="wa-btn" href="https://wa.me/6281265748644?text=Halo%20Team%20JXustinNwi" target="_blank">Chat via WA</a>
+      </div>
+      <div class="card">
+        <h3>Telegram</h3>
+        <p><a href="https://t.me/JXustinnwi" target="_blank">@JXustinnwi</a></p>
+      </div>
+      <div class="card">
+        <h3>GitHub</h3>
+        <p><a href="https://github.com/username" target="_blank">github.com/username</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 JXustinNwi. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Scroll fade-up/down
+    const sections = document.querySelectorAll("section");
+    const cards = document.querySelectorAll(".card");
+
+    function checkVisibility() {
+      sections.forEach(sec => {
+        const rect = sec.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 100 && rect.bottom > 100) {
+          sec.classList.add("visible");
+        } else {
+          sec.classList.remove("visible");
+        }
+      });
+
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 50 && rect.bottom > 50) {
+          card.classList.add("visible");
+        } else {
+          card.classList.remove("visible");
+        }
+      });
+    }
+    window.addEventListener("scroll", checkVisibility);
+    window.addEventListener("load", checkVisibility);
+
+    // Toggle explanation
+    function toggleExplanation(btn) {
+      const box = btn.nextElementSibling;
+      box.style.display = box.style.display === "block" ? "none" : "block";
+    }
+  </script>
+</body>
+  </html>
