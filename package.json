@@ -1,7 +1,7 @@
 {
-  "name": "phoenix-session-api",
+  "name": "japython",
   "version": "1.0.0",
-  "scripts": {
-    "dev": "vercel dev"
-  }
+  "private": true,
+  "description": "JAPython - Python compiler online dengan Joo AI",
+  "engines": { "node": ">=18" }
 }

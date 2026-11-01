@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JAPython - Python Compiler Online</title>
+<meta name="description" content="Tulis dan jalankan kode Python langsung di browser, ditemani Joo AI.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='2' y='2' width='36' height='36' rx='11' fill='%236c4cff' stroke='%231f1b3a' stroke-width='3'/%3E%3Cpath d='M24 11v12a6 6 0 0 1-6 6a6 6 0 0 1-5-3' fill='none' stroke='white' stroke-width='4.5' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%23ffcf3f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<style>
+:root{
+  --ink:#1f1b3a; --bg:#f1f4ff; --violet:#6c4cff; --violet-soft:#ece8ff; --sun:#ffcf3f;
+  --mint:#3ddc97; --coral:#ff6b6b; --code:#231b4d; --muted:#6b6790;
+  --bd:2.5px solid var(--ink);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:'Fredoka',system-ui,sans-serif;color:var(--ink);background:var(--bg);display:flex;flex-direction:column;min-height:100vh;font-size:16px}
+button,select,input,textarea{font-family:inherit;color:inherit}
+.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.wrap{width:min(1320px,100% - 28px);margin-inline:auto}
+
+header{padding:14px 0 12px}
+header .wrap{display:flex;align-items:center;gap:10px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);margin-right:auto}
+.logo svg{width:38px;height:38px;filter:drop-shadow(2px 2px 0 var(--ink))}
+.logo b{font-size:1.65rem;font-weight:700;letter-spacing:-.3px}
+.logo b span{color:var(--violet)}
+.status{display:flex;align-items:center;gap:8px;font-weight:500;font-size:.92rem;background:#fff;border:var(--bd);border-radius:999px;padding:4px 12px 4px 10px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--sun);animation:pulse 1s infinite}
+.status.ready .dot{background:var(--mint);animation:none}
+.status.busy .dot{background:var(--violet)}
+@keyframes pulse{50%{transform:scale(1.5)}}
+
+.btn{cursor:pointer;font-weight:600;font-size:.95rem;background:#fff;border:var(--bd);border-radius:12px;padding:6px 12px;box-shadow:2px 2px 0 var(--ink);display:inline-flex;align-items:center;gap:7px;transition:transform .08s,box-shadow .08s;white-space:nowrap;line-height:1.2}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.btn:focus-visible,.tab:focus-visible,.chip:focus-visible,textarea:focus-visible,input:focus-visible,.cba button:focus-visible,.ibtn:focus-visible{outline:3px solid var(--violet);outline-offset:2px}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none;box-shadow:2px 2px 0 var(--ink)}
+.btn.run{background:var(--mint);font-size:1.02rem;padding:7px 18px}
+.btn.stop{background:var(--coral)}
+.btn.pri{background:var(--violet);color:#fff}
+.btn.sm{padding:4px 10px;font-size:.85rem;box-shadow:2px 2px 0 var(--ink)}
+.btn[hidden]{display:none}
+
+main{flex:1;padding:0 0 16px;min-height:0}
+main .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;height:calc(100vh - 140px);min-height:480px}
+.card{background:#fff;border:var(--bd);border-radius:18px;box-shadow:5px 5px 0 var(--ink);display:flex;flex-direction:column;overflow:hidden;min-width:0;min-height:0}
+.bar{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:var(--bd);flex-wrap:wrap}
+.sp{flex:1}
+.fname{font-weight:500;border:2px solid transparent;border-radius:9px;padding:3px 8px;font-size:.95rem;background:var(--violet-soft);width:130px;min-width:60px}
+.fname:hover{border-color:var(--ink)}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 12px;border-top:var(--bd);font-size:.85rem;font-weight:500;color:var(--muted);background:#fff}
+.foot .btn{padding:1px 8px;font-size:.8rem}
+
+.edwrap{position:relative;flex:1;min-height:0;background:var(--code)}
+.CodeMirror{position:absolute;inset:0;height:100%;font-family:'Space Mono',monospace;font-size:15px;line-height:1.6;background:var(--code);color:#f4f0ff}
+.CodeMirror-gutters{background:#1b1440;border-right:2px solid #3a2f78}
+.CodeMirror-linenumber{color:#7f72c4}
+.CodeMirror-cursor{border-left:2px solid var(--sun)}
+.CodeMirror-selected{background:rgba(108,76,255,.45)!important}
+.CodeMirror-activeline-background{background:rgba(255,255,255,.05)}
+.CodeMirror-placeholder{color:#7f72c4!important;font-style:italic}
+.cm-s-jap .cm-keyword{color:#ff8ac0;font-weight:700}
+.cm-s-jap .cm-builtin{color:#6fe3ff}
+.cm-s-jap .cm-def{color:#ffd45e}
+.cm-s-jap .cm-variable-2{color:#c9b8ff}
+.cm-s-jap .cm-string{color:#7bf19a}
+.cm-s-jap .cm-number{color:#ffa45c}
+.cm-s-jap .cm-comment{color:#8b7fd0;font-style:italic}
+.cm-s-jap .cm-operator{color:#ff8ac0}
+.cm-s-jap .cm-meta{color:#ffa45c}
+.cm-s-jap .CodeMirror-matchingbracket{background:rgba(255,207,63,.3);color:#fff!important}
+
+.tabs{display:flex;gap:4px;background:var(--violet-soft);border:2px solid var(--ink);border-radius:11px;padding:2px}
+.tab{cursor:pointer;font-weight:600;font-size:.9rem;border:0;border-radius:8px;padding:4px 14px;background:transparent}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff}
+.pane{flex:1;min-height:0;display:none;flex-direction:column}
+.pane.on{display:flex}
+#out{margin:0;padding:14px 16px;flex:1;overflow:auto;font-family:'Space Mono',monospace;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+#out .e{color:#d6194b;font-weight:700}
+#out .ok{color:#0b8a55;font-weight:700}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;height:100%;min-height:160px;color:var(--muted);font-family:'Fredoka',sans-serif;font-size:1rem;text-align:center;white-space:normal}
+.empty .i{width:38px;height:38px;stroke-width:1.8}
+#stdin{flex:1;border:0;resize:none;padding:14px 16px;font-family:'Space Mono',monospace;font-size:14px;line-height:1.6;background:#fffbe8}
+.hint{padding:7px 14px;font-size:.85rem;background:var(--sun);border-top:var(--bd);font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);border-radius:999px;padding:0 10px;font-size:.82rem;font-weight:600;background:#fff;color:var(--ink)}
+.pill.ok{background:#c8f6e0}.pill.err{background:#ffd3d3}
+.meta{display:flex;gap:8px;align-items:center}
+.askerr{margin-top:12px;font-family:'Fredoka',sans-serif}
+
+.scrim{position:fixed;inset:0;background:rgba(31,27,58,.35);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.scrim.on{opacity:1;pointer-events:auto}
+.joo{position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);background:#fff;border-left:var(--bd);z-index:21;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .25s cubic-bezier(.3,.9,.3,1);box-shadow:-6px 0 0 rgba(31,27,58,.15)}
+.joo{visibility:hidden;transition:transform .25s cubic-bezier(.3,.9,.3,1),visibility 0s .25s}
+.joo.on{transform:none;visibility:visible;transition:transform .25s cubic-bezier(.3,.9,.3,1)}
+.jh{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:var(--bd);background:var(--violet-soft)}
+.jav{width:36px;height:36px;border-radius:50%;background:var(--violet);color:#fff;border:var(--bd);display:grid;place-items:center;flex:none}
+.jav .i{width:19px;height:19px}
+.jh h2{margin:0;font-size:1.1rem;line-height:1.1}
+.jh small{color:var(--muted);font-weight:500;font-size:.8rem}
+.ibtn{cursor:pointer;background:transparent;border:2px solid transparent;border-radius:9px;width:34px;height:34px;display:grid;place-items:center}
+.ibtn:hover{border-color:var(--ink);background:#fff}
+#msgs{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:18px;scroll-behavior:smooth}
+.m.user{align-self:flex-end;max-width:88%}
+.bub{background:var(--violet);color:#fff;border-radius:16px 16px 4px 16px;padding:9px 14px;white-space:pre-wrap;word-break:break-word;border:var(--bd);font-size:.97rem}
+.m.ai{display:flex;gap:10px;align-items:flex-start}
+.m.ai .jav{width:30px;height:30px}
+.m.ai .jav .i{width:15px;height:15px}
+.mc{flex:1;min-width:0}
+.mb{min-width:0}
+.mb.err{color:#c4163f;font-weight:500}
+.ma{display:flex;gap:4px;margin-top:6px}
+.ma .ibtn{width:30px;height:30px;color:var(--muted)}
+.typing{display:flex;gap:5px;padding:10px 0}
+.typing i{width:8px;height:8px;border-radius:50%;background:var(--violet);animation:bounce 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bounce{40%{transform:translateY(-6px)}}
+.greet{display:flex;flex-direction:column;gap:14px;margin:auto 0;align-items:flex-start}
+.greet .jav{width:52px;height:52px}.greet .jav .i{width:26px;height:26px}
+.greet h3{margin:0;font-size:1.4rem}
+.greet p{margin:0;color:var(--muted);line-height:1.5}
+.chips{display:flex;flex-direction:column;gap:8px;width:100%}
+.chip{cursor:pointer;display:flex;align-items:center;gap:10px;text-align:left;font-weight:500;font-size:.95rem;background:#fff;border:var(--bd);border-radius:12px;padding:9px 12px;transition:background .12s,transform .08s}
+.chip:hover{background:var(--violet-soft);transform:translateX(3px)}
+.chip .i{color:var(--violet)}
+.jf{border-top:var(--bd);padding:10px 12px 12px;background:#fff}
+.ctx{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:500;color:var(--muted);margin-bottom:8px;cursor:pointer;user-select:none}
+.ctx input{accent-color:var(--violet);width:16px;height:16px;margin:0}
+.ib{display:flex;gap:8px;align-items:flex-end;border:var(--bd);border-radius:14px;padding:6px 6px 6px 12px;background:#fff}
+.ib textarea{flex:1;border:0;resize:none;outline:0;font-size:.97rem;line-height:1.45;max-height:140px;padding:6px 0;background:transparent}
+.send{cursor:pointer;width:38px;height:38px;border-radius:10px;background:var(--violet);color:#fff;border:var(--bd);display:grid;place-items:center;flex:none}
+.send.stopping{background:var(--coral);color:var(--ink)}
+.send[disabled]{opacity:.45;cursor:not-allowed}
+
+.md{font-size:.97rem;line-height:1.62;word-break:break-word}
+.md>*:first-child{margin-top:0}.md>*:last-child{margin-bottom:0}
+.md p{margin:.55em 0}
+.md h3,.md h4,.md h5,.md h6{margin:1.1em 0 .4em;line-height:1.25}
+.md h3{font-size:1.15rem}.md h4{font-size:1.05rem}.md h5,.md h6{font-size:.97rem}
+.md ul,.md ol{margin:.5em 0;padding-left:1.4em}
+.md li{margin:.25em 0}
+.md li::marker{color:var(--violet);font-weight:700}
+.md strong{font-weight:700}
+.md a{color:var(--violet);font-weight:500}
+.md hr{border:0;border-top:2px dashed #cfc8f5;margin:1em 0}
+.md blockquote{margin:.7em 0;padding:.4em 12px;border-left:4px solid var(--violet);background:var(--violet-soft);border-radius:0 10px 10px 0}
+.md code{font-family:'Space Mono',monospace;font-size:.86em;background:var(--violet-soft);color:#5236d6;border-radius:6px;padding:1px 5px}
+.tbl{overflow-x:auto;margin:.8em 0;border:var(--bd);border-radius:12px}
+.md table{border-collapse:collapse;width:100%;font-size:.9rem}
+.md th,.md td{padding:7px 12px;border-bottom:1.5px solid #ddd8f5;text-align:left;vertical-align:top}
+.md th{background:var(--violet-soft);font-weight:600;white-space:nowrap}
+.md tr:last-child td{border-bottom:0}
+.cb{margin:.8em 0;border:var(--bd);border-radius:12px;overflow:hidden;background:var(--code);color:#f4f0ff}
+.cbh{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 8px 5px 12px;background:#150f38;font-size:.78rem;font-weight:600;color:#b3a7ee}
+.cba{display:flex;gap:4px}
+.cba button{cursor:pointer;display:inline-flex;align-items:center;gap:5px;background:transparent;border:0;border-radius:7px;color:#e5deff;font-size:.78rem;font-weight:500;padding:3px 8px}
+.cba button:hover{background:rgba(255,255,255,.14)}
+.cba .i{width:14px;height:14px}
+.md .cb pre{margin:0;padding:10px 14px;overflow-x:auto}
+.md .cb code{background:transparent;color:inherit;padding:0;font-size:.82rem;line-height:1.6}
+.cb i{font-style:normal}
+.cb .k{color:#ff8ac0;font-weight:700}.cb .b{color:#6fe3ff}.cb .s{color:#7bf19a}.cb .n{color:#ffa45c}.cb .c{color:#8b7fd0;font-style:italic}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120px);background:var(--ink);color:#fff;padding:9px 18px;border-radius:999px;font-weight:500;transition:transform .25s;z-index:50;font-size:.92rem}
+.toast.on{transform:translate(-50%,0)}
+
+@media (max-width:900px){
+  main .wrap{grid-template-columns:1fr;height:auto}
+  .card.ed{height:56vh;min-height:360px}
+  .card.out{height:46vh;min-height:300px}
+  .status span{display:none}
+  .status{padding:4px 8px}
+  .joo{width:100vw;border-left:0}
+}
+@media (max-width:560px){ .btn .lbl{display:none} .btn.run .lbl,.btn.stop .lbl,.btn.pri .lbl{display:inline} .fname{width:90px} }
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<!-- ikon -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="5.5" y="5.5" width="13" height="13" rx="2.5" fill="currentColor"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M11 3l1.9 5.6L18.5 10.5l-5.6 1.9L11 18l-1.9-5.6L3.5 10.5l5.6-1.9z"/><path d="M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-filenew" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M12 12v6M9 15h6"/></symbol>
+  <symbol id="i-bug" viewBox="0 0 24 24"><path d="M9 7a3 3 0 0 1 6 0M8 10h8v5a4 4 0 0 1-8 0zM4 12h4M16 12h4M5 19l3-2M19 19l-3-2M5 6l3 2M19 6l-3 2"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2zM4 21V5M8 8h6"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 9h8M8 13h8M8 17h4"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6" fill="currentColor"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><path d="M5 8l4 4-4 4M12 17h7"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+</svg>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="./" aria-label="JAPython">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <rect x="2" y="2" width="36" height="36" rx="11" fill="#6c4cff" stroke="#1f1b3a" stroke-width="2.5"/>
+        <path d="M24 11v12a6 6 0 0 1-6 6a6 6 0 0 1-5-3" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="13" cy="13" r="2.8" fill="#ffcf3f"/>
+      </svg>
+      <b>JA<span>Python</span></b>
+    </a>
+    <div class="status" id="status" role="status"><i class="dot"></i><span id="statusText">Memuat Python...</span></div>
+    <button class="btn" id="share" title="Salin link berisi kode ini"><svg class="i"><use href="#i-link"/></svg><span class="lbl">Bagikan</span></button>
+    <button class="btn pri" id="joobtn"><svg class="i"><use href="#i-sparkle"/></svg><span class="lbl">Joo AI</span></button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="card ed" aria-label="Editor">
+      <div class="bar">
+        <button class="btn run" id="run" disabled><svg class="i"><use href="#i-play"/></svg><span class="lbl">Run</span></button>
+        <button class="btn stop" id="stop" hidden><svg class="i"><use href="#i-stop"/></svg><span class="lbl">Stop</span></button>
+        <input class="fname" id="fname" value="main.py" aria-label="Nama file" spellcheck="false" maxlength="40">
+        <span class="sp"></span>
+        <button class="btn" id="new" title="Editor baru"><svg class="i"><use href="#i-filenew"/></svg><span class="lbl">Baru</span></button>
+        <button class="btn" id="open" title="Buka file .py"><svg class="i"><use href="#i-folder"/></svg><span class="lbl">Buka</span></button>
+        <button class="btn" id="save" title="Unduh (Ctrl+S)"><svg class="i"><use href="#i-download"/></svg><span class="lbl">Simpan</span></button>
+        <input type="file" id="file" accept=".py,.txt" hidden>
+      </div>
+      <div class="edwrap"><textarea id="code" aria-label="Kode Python"></textarea></div>
+      <div class="foot">
+        <span id="pos">Baris 1, Kolom 1</span>
+        <span id="lines">0 baris</span>
+        <span style="display:flex;gap:6px;align-items:center">
+          <button class="btn" id="fminus" title="Perkecil huruf" aria-label="Perkecil huruf">A-</button>
+          <button class="btn" id="fplus" title="Perbesar huruf" aria-label="Perbesar huruf">A+</button>
+        </span>
+      </div>
+    </section>
+
+    <section class="card out" aria-label="Hasil">
+      <div class="bar">
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" id="tOut" aria-selected="true" aria-controls="pOut">Output</button>
+          <button class="tab" role="tab" id="tIn" aria-selected="false" aria-controls="pIn">Input</button>
+        </div>
+        <span class="sp"></span>
+        <button class="btn sm" id="copy" title="Salin output"><svg class="i"><use href="#i-copy"/></svg><span class="lbl">Salin</span></button>
+        <button class="btn sm" id="clear" title="Bersihkan output"><svg class="i"><use href="#i-trash"/></svg><span class="lbl">Bersihkan</span></button>
+      </div>
+      <div class="pane on" id="pOut" role="tabpanel" aria-labelledby="tOut"><div id="out" aria-live="polite"></div></div>
+      <div class="pane" id="pIn" role="tabpanel" aria-labelledby="tIn">
+        <textarea id="stdin" placeholder="Isi jawaban untuk input() di sini, satu baris untuk satu input()." spellcheck="false"></textarea>
+        <div class="hint">Kodemu pakai input()? Tulis jawabannya di sini sebelum menekan Run.</div>
+      </div>
+      <div class="foot">
+        <span class="meta"><span class="pill" id="state">Belum jalan</span><span id="time"></span></span>
+        <span>Python 3.12</span>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- Joo AI -->
+<div class="scrim" id="scrim"></div>
+<aside class="joo" id="joo" aria-label="Joo AI" aria-hidden="true">
+  <div class="jh">
+    <div class="jav"><svg class="i"><use href="#i-sparkle"/></svg></div>
+    <div style="flex:1"><h2>Joo AI</h2><small>Asisten Python JAPython</small></div>
+    <button class="ibtn" id="jclear" title="Percakapan baru" aria-label="Percakapan baru"><svg class="i"><use href="#i-trash"/></svg></button>
+    <button class="ibtn" id="jclose" title="Tutup (Esc)" aria-label="Tutup"><svg class="i"><use href="#i-x"/></svg></button>
+  </div>
+  <div id="msgs" aria-live="polite"></div>
+  <div class="jf">
+    <label class="ctx"><input type="checkbox" id="ctx" checked> Sertakan kode dan output terakhir sebagai konteks</label>
+    <div class="ib">
+      <textarea id="jin" rows="1" placeholder="Tanya Joo tentang Python..." aria-label="Pesan untuk Joo"></textarea>
+      <button class="send" id="send" aria-label="Kirim"><svg class="i"><use href="#i-send"/></svg></button>
+    </div>
+  </div>
+</aside>
+
+<div class="toast" id="toast" role="status"></div>
+
+<!-- Worker Python (jalan di background supaya halaman tidak freeze) -->
+<script id="worker-src" type="text/plain">
+importScripts("https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js");
+let py;
+const BOOT = `
+import builtins, sys
+_Q = []
+def _set_q(l):
+    _Q[:] = [str(x) for x in l]
+class _In:
+    def readline(self, *a):
+        return (_Q.pop(0) + chr(10)) if _Q else ""
+    def read(self, *a):
+        r = chr(10).join(_Q)
+        _Q.clear()
+        return r
+    def readlines(self, *a):
+        out = []
+        while _Q:
+            out.append(_Q.pop(0) + chr(10))
+        return out
+    def __iter__(self):
+        return self
+    def __next__(self):
+        l = self.readline()
+        if not l:
+            raise StopIteration
+        return l
+    def isatty(self):
+        return False
+sys.stdin = _In()
+def _input(prompt=""):
+    if not _Q:
+        raise EOFError("input() butuh data. Isi dulu di tab Input.")
+    v = _Q.pop(0)
+    print(str(prompt) + v)
+    return v
+builtins.input = _input
+`;
+(async () => {
+  py = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/" });
+  py.setStdout({ batched: s => postMessage({ t: "out", d: s + "\n" }) });
+  py.setStderr({ batched: s => postMessage({ t: "err", d: s + "\n" }) });
+  py.runPython(BOOT);
+  postMessage({ t: "ready" });
+})().catch(e => postMessage({ t: "fatal", d: String(e) }));
+
+onmessage = async (ev) => {
+  const { code, stdin } = ev.data;
+  let ok = true;
+  try {
+    const lines = stdin ? stdin.replace(/\n$/, "").split("\n") : [];
+    py.globals.get("_set_q")(lines);
+    await py.loadPackagesFromImports(code, {
+      messageCallback: m => postMessage({ t: "pkg", d: m }),
+      errorCallback: () => {}
+    });
+    const g = py.globals.get("dict")();
+    g.set("__name__", "__main__");
+    try { await py.runPythonAsync(code, { globals: g }); } finally { g.destroy(); }
+  } catch (e) {
+    ok = false;
+    let m = String(e.message || e);
+    const i = m.indexOf('File "<exec>"');
+    if (i >= 0) m = "Traceback (most recent call last):\n  " + m.slice(i);
+    postMessage({ t: "err", d: m.trim() + "\n" });
+  }
+  try { py.runPython("import sys; sys.stdout.flush(); sys.stderr.flush()"); } catch (e) {}
+  postMessage({ t: "done", ok });
+};
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/display/placeholder.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const ic = n => `<svg class="i"><use href="#i-${n}"/></svg>`;
+const store = {
+  get(k, d = "") { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+let tt;
+function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2000); }
+const copyText = (s, msg) => (navigator.clipboard ? navigator.clipboard.writeText(s) : Promise.reject()).then(() => toast(msg), () => toast("Gagal menyalin"));
+
+const b64 = { enc: s => btoa(unescape(encodeURIComponent(s))), dec: s => decodeURIComponent(escape(atob(s))) };
+let initial = store.get("japython:code");
+const h = location.hash.match(/^#c=(.+)$/);
+if (h) { try { initial = b64.dec(decodeURIComponent(h[1])); history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
+
+const cm = CodeMirror.fromTextArea($("code"), {
+  mode: "python", theme: "jap", lineNumbers: true, indentUnit: 4, tabSize: 4, indentWithTabs: false,
+  autoCloseBrackets: true, matchBrackets: true, styleActiveLine: true,
+  placeholder: "# Tulis kode Python kamu di sini, lalu tekan Run",
+  extraKeys: {
+    Tab: c => c.somethingSelected() ? c.indentSelection("add") : c.replaceSelection("    ", "end"),
+    "Shift-Tab": c => c.indentSelection("subtract"),
+    "Ctrl-/": "toggleComment", "Cmd-/": "toggleComment"
+  }
+});
+cm.setValue(initial || "");
+cm.clearHistory();
+$("fname").value = store.get("japython:name", "main.py") || "main.py";
+$("fname").addEventListener("input", () => store.set("japython:name", $("fname").value));
+
+const updInfo = () => { const p = cm.getCursor(); $("pos").textContent = `Baris ${p.line + 1}, Kolom ${p.ch + 1}`; $("lines").textContent = `${cm.lineCount()} baris`; };
+cm.on("cursorActivity", updInfo);
+cm.on("change", () => { store.set("japython:code", cm.getValue()); updInfo(); });
+updInfo();
+
+let fs = parseInt(store.get("japython:fs", "15"), 10) || 15;
+const setFs = n => { fs = Math.max(11, Math.min(24, n)); cm.getWrapperElement().style.fontSize = fs + "px"; cm.refresh(); store.set("japython:fs", fs); };
+setFs(fs);
+$("fplus").onclick = () => setFs(fs + 1);
+$("fminus").onclick = () => setFs(fs - 1);
+
+$("new").onclick = () => {
+  if (cm.getValue().trim() && !confirm("Kosongkan editor? Kode saat ini akan hilang.")) return;
+  cm.setValue(""); cm.clearHistory(); $("fname").value = "main.py"; store.set("japython:name", "main.py"); clearOut(); cm.focus();
+};
+$("open").onclick = () => $("file").click();
+$("file").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { cm.setValue(String(r.result)); $("fname").value = f.name; store.set("japython:name", f.name); toast("File dibuka"); };
+  r.readAsText(f); e.target.value = "";
+};
+function saveFile() {
+  let n = ($("fname").value.trim() || "main.py").replace(/[\\/:*?"<>|]/g, "_");
+  if (!/\.py$/i.test(n)) n += ".py";
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([cm.getValue()], { type: "text/x-python" }));
+  a.download = n; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000); toast("File diunduh");
+}
+$("save").onclick = saveFile;
+$("share").onclick = () => {
+  const code = cm.getValue();
+  if (!code.trim()) return toast("Editor masih kosong");
+  const url = location.origin + location.pathname + "#c=" + encodeURIComponent(b64.enc(code));
+  copyText(url, url.length > 8000 ? "Link disalin, tapi sangat panjang" : "Link berbagi disalin");
+};
+
+const out = $("out");
+const EMPTY = `<div class="empty">${ic("terminal")}<div>Tekan <b>Run</b> atau <b>Ctrl + Enter</b><br>untuk melihat hasil kodenya di sini.</div></div>`;
+let hasOut = false, lastOut = "";
+out.innerHTML = EMPTY;
+
+function write(text, cls) {
+  if (!hasOut) { out.textContent = ""; hasOut = true; }
+  if (cls) { const s = document.createElement("span"); s.className = cls; s.textContent = text; out.appendChild(s); }
+  else out.appendChild(document.createTextNode(text));
+  if (cls !== "ok") lastOut += text;
+  out.scrollTop = out.scrollHeight;
+}
+function setState(txt, cls) { const s = $("state"); s.textContent = txt; s.className = "pill " + (cls || ""); }
+function clearOut() { out.innerHTML = EMPTY; hasOut = false; lastOut = ""; $("time").textContent = ""; setState("Belum jalan"); }
+$("clear").onclick = clearOut;
+$("copy").onclick = () => hasOut && lastOut ? copyText(lastOut, "Output disalin") : toast("Belum ada output");
+
+function tab(which) {
+  const o = which === "out";
+  $("tOut").setAttribute("aria-selected", o); $("tIn").setAttribute("aria-selected", !o);
+  $("pOut").classList.toggle("on", o); $("pIn").classList.toggle("on", !o);
+}
+$("tOut").onclick = () => tab("out"); $("tIn").onclick = () => tab("in");
+
+function setStatus(cls, text) { $("status").className = "status " + cls; $("statusText").textContent = text; }
+
+let worker, ready = false, running = false, t0 = 0, tick;
+function startWorker() {
+  ready = false; $("run").disabled = true; setStatus("", "Memuat Python...");
+  const url = URL.createObjectURL(new Blob([$("worker-src").textContent], { type: "text/javascript" }));
+  worker = new Worker(url);
+  worker.onmessage = ({ data: m }) => {
+    if (m.t === "ready") { ready = true; $("run").disabled = false; setStatus("ready", "Python siap"); }
+    else if (m.t === "out") write(m.d);
+    else if (m.t === "err") write(m.d, "e");
+    else if (m.t === "pkg") setState("Memuat paket...");
+    else if (m.t === "fatal") { setStatus("", "Gagal memuat"); toast("Python gagal dimuat. Cek internet lalu refresh."); }
+    else if (m.t === "done") finish(m.ok);
+  };
+  worker.onerror = e => { write("Terjadi masalah: " + (e.message || "worker error") + "\n", "e"); if (running) finish(false); };
+}
+function finish(ok) {
+  running = false; clearInterval(tick);
+  $("time").textContent = ((performance.now() - t0) / 1000).toFixed(2) + " detik";
+  setState(ok ? "Selesai" : "Ada error", ok ? "ok" : "err");
+  if (ok) write("\n[program selesai]\n", "ok");
+  else {
+    const b = document.createElement("button");
+    b.className = "btn sm askerr"; b.innerHTML = ic("sparkle") + "Minta Joo jelaskan error ini";
+    b.onclick = () => { openJoo(); send("Jelaskan error di output tadi, penyebabnya, dan cara memperbaikinya."); };
+    out.appendChild(document.createElement("br")); out.appendChild(b); out.scrollTop = out.scrollHeight;
+  }
+  $("run").hidden = false; $("stop").hidden = true; setStatus("ready", "Python siap");
+}
+function run() {
+  if (!ready || running) return;
+  if (!cm.getValue().trim()) { toast("Editor masih kosong"); cm.focus(); return; }
+  running = true; hasOut = true; lastOut = ""; out.textContent = ""; tab("out");
+  $("run").hidden = true; $("stop").hidden = false;
+  setState("Berjalan..."); $("time").textContent = ""; setStatus("busy", "Menjalankan");
+  t0 = performance.now();
+  tick = setInterval(() => { $("time").textContent = ((performance.now() - t0) / 1000).toFixed(1) + " detik"; }, 100);
+  worker.postMessage({ code: cm.getValue(), stdin: $("stdin").value.replace(/\r/g, "") });
+}
+function stop() {
+  if (!running) return;
+  worker.terminate(); running = false; clearInterval(tick);
+  write("\n[program dihentikan]\n", "e");
+  $("run").hidden = false; $("stop").hidden = true; setState("Dihentikan", "err");
+  startWorker();
+}
+$("run").onclick = run; $("stop").onclick = stop;
+document.addEventListener("keydown", e => {
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && e.key === "Enter") { e.preventDefault(); run(); }
+  else if (mod && e.key.toLowerCase() === "s") { e.preventDefault(); saveFile(); }
+  else if (e.key === "Escape" && $("joo").classList.contains("on")) closeJoo();
+});
+startWorker();
+
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const KW = new Set("False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield match case".split(" "));
+const BI = new Set("print input len range int float str list dict set tuple bool sum min max abs sorted reversed enumerate zip map filter open type isinstance super self cls round any all format repr id iter next".split(" "));
+function hlPy(code) {
+  const re = /(#[^\n]*)|("""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|\b(\d+(?:\.\d+)?)\b|\b([A-Za-z_]\w*)\b/g;
+  let o = "", last = 0, m;
+  while ((m = re.exec(code))) {
+    o += esc(code.slice(last, m.index));
+    if (m[1]) o += `<i class="c">${esc(m[1])}</i>`;
+    else if (m[2]) o += `<i class="s">${esc(m[2])}</i>`;
+    else if (m[3]) o += `<i class="n">${m[3]}</i>`;
+    else o += KW.has(m[4]) ? `<i class="k">${m[4]}</i>` : BI.has(m[4]) ? `<i class="b">${m[4]}</i>` : m[4];
+    last = re.lastIndex;
+  }
+  return o + esc(code.slice(last));
+}
+function inline(s) {
+  const hold = [];
+  s = s.replace(/`([^`\n]+)`/g, (_, c) => { hold.push("<code>" + esc(c) + "</code>"); return "\u0000" + (hold.length - 1) + "\u0000"; });
+  s = esc(s);
+  s = s.replace(/\*\*([^*\n]+?)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/(^|[\s(])\*([^*\s][^*\n]*?)\*(?=[\s).,!?:;]|$)/g, "$1<em>$2</em>");
+  s = s.replace(/~~([^~\n]+)~~/g, "<del>$1</del>");
+  s = s.replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)"'<>]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => hold[i]);
+}
+function codeBlock(code, lang) {
+  const l = (lang || "").toLowerCase(), py = l === "python" || l === "py";
+  return `<div class="cb"><div class="cbh"><span>${esc(lang || "kode")}</span><span class="cba">` +
+    `<button data-act="copy">${ic("copy")}Salin</button>` +
+    (py ? `<button data-act="use">${ic("terminal")}Pakai</button><button data-act="run">${ic("play")}Jalankan</button>` : "") +
+    `</span></div><pre><code>${py ? hlPy(code) : esc(code)}</code></pre></div>`;
+}
+const SEP = /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/;
+const cells = r => r.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map(c => c.trim());
+const isTable = (L, i) => i + 1 < L.length && L[i].includes("|") && L[i + 1].includes("|") && SEP.test(L[i + 1]);
+const isHr = l => /^\s*([-*_])(\s*\1){2,}\s*$/.test(l);
+const LI = /^(\s*)([-*+]|\d+[.)])\s+(.*)/;
+const startsBlock = (L, i) => /^\s*```/.test(L[i]) || /^#{1,6}\s/.test(L[i]) || isHr(L[i]) || LI.test(L[i]) || /^\s*>/.test(L[i]) || isTable(L, i);
+function listHtml(items) {
+  let html = "", st = [];
+  for (const it of items) {
+    while (st.length && it.indent < st[st.length - 1].indent) html += "</li></" + st.pop().tag + ">";
+    const top = st[st.length - 1];
+    if (!top || it.indent > top.indent) { const tag = it.ordered ? "ol" : "ul"; st.push({ indent: it.indent, tag }); html += `<${tag}${it.ordered && it.num > 1 ? ` start="${it.num}"` : ""}><li>` + inline(it.text); }
+    else html += "</li><li>" + inline(it.text);
+  }
+  while (st.length) html += "</li></" + st.pop().tag + ">";
+  return html;
+}
+function md(src) {
+  const L = src.replace(/\r/g, "").split("\n"); let html = "", i = 0, m;
+  while (i < L.length) {
+    const l = L[i];
+    if ((m = l.match(/^(\s*)```\s*([\w+-]*)/))) {
+      const buf = [], ind = m[1].length; i++;
+      while (i < L.length && !/^\s*```/.test(L[i])) buf.push(L[i++].replace(new RegExp("^ {0," + ind + "}"), ""));
+      i++; html += codeBlock(buf.join("\n"), m[2]); continue;
+    }
+    if (!l.trim()) { i++; continue; }
+    if ((m = l.match(/^(#{1,6})\s+(.*)/))) { const n = Math.min(m[1].length + 2, 6); html += `<h${n}>${inline(m[2])}</h${n}>`; i++; continue; }
+    if (isHr(l)) { html += "<hr>"; i++; continue; }
+    if (isTable(L, i)) {
+      const head = cells(L[i]), al = cells(L[i + 1]).map(c => /^:-+:$/.test(c) ? "center" : /-:$/.test(c) ? "right" : "left");
+      i += 2; let rows = "";
+      while (i < L.length && L[i].includes("|") && L[i].trim()) {
+        const r = cells(L[i++]);
+        rows += "<tr>" + head.map((_, k) => `<td style="text-align:${al[k] || "left"}">${inline(r[k] || "")}</td>`).join("") + "</tr>";
+      }
+      html += `<div class="tbl"><table><thead><tr>${head.map((c, k) => `<th style="text-align:${al[k] || "left"}">${inline(c)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+      continue;
+    }
+    if (/^\s*>/.test(l)) {
+      const buf = [];
+      while (i < L.length && /^\s*>/.test(L[i])) buf.push(L[i++].replace(/^\s*>\s?/, ""));
+      html += `<blockquote>${buf.map(inline).join("<br>")}</blockquote>`; continue;
+    }
+    if ((m = l.match(LI))) {
+      const items = [];
+      while (i < L.length) {
+        if (!L[i].trim()) {
+          let j = i; while (j < L.length && !L[j].trim()) j++;
+          if (j < L.length && LI.test(L[j]) && !isHr(L[j])) { i = j; continue; }
+          break;
+        }
+        const x = L[i].match(LI);
+        if (x && !isHr(L[i])) { items.push({ indent: x[1].replace(/\t/g, "    ").length, ordered: /\d/.test(x[2]), num: parseInt(x[2], 10) || 1, text: x[3] }); i++; }
+        else if (L[i].trim() && /^\s{2,}\S/.test(L[i]) && items.length && !startsBlock(L, i)) { items[items.length - 1].text += " " + L[i].trim(); i++; }
+        else break;
+      }
+      html += listHtml(items); continue;
+    }
+    const buf = [l]; i++;
+    while (i < L.length && L[i].trim() && !startsBlock(L, i)) buf.push(L[i++]);
+    html += `<p>${buf.map(inline).join("<br>")}</p>`;
+  }
+  return html;
+}
+
+const joo = $("joo"), msgsEl = $("msgs"), jin = $("jin"), sendBtn = $("send");
+let msgs = [];
+try { const s = JSON.parse(store.get("japython:chat", "[]")); if (Array.isArray(s)) msgs = s.filter(x => x && (x.role === "user" || x.role === "assistant") && typeof x.content === "string"); } catch (e) {}
+let busy = false, ctrl = null;
+const saveChat = () => store.set("japython:chat", JSON.stringify(msgs.slice(-30)));
+
+function openJoo() { joo.classList.add("on"); joo.setAttribute("aria-hidden", "false"); $("scrim").classList.add("on"); setTimeout(() => jin.focus(), 250); }
+function closeJoo() { joo.classList.remove("on"); joo.setAttribute("aria-hidden", "true"); $("scrim").classList.remove("on"); }
+$("joobtn").onclick = openJoo; $("jclose").onclick = closeJoo; $("scrim").onclick = closeJoo;
+
+const nearBottom = () => msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight < 140;
+const toBottom = () => { msgsEl.style.scrollBehavior = "auto"; msgsEl.scrollTop = msgsEl.scrollHeight; msgsEl.style.scrollBehavior = ""; };
+
+const QUICK = [
+  ["book", "Jelaskan kode di editor", "Jelaskan kode di editor langkah demi langkah dengan singkat dan jelas."],
+  ["bug", "Cari dan perbaiki bug", "Periksa kode di editor, temukan bug atau potensi masalah, lalu berikan versi yang sudah diperbaiki."],
+  ["bolt", "Optimalkan kode", "Optimalkan kode di editor agar lebih rapi, efisien, dan Pythonic. Tampilkan perbandingan sebelum dan sesudah dalam tabel."],
+  ["note", "Tambahkan docstring dan komentar", "Tambahkan docstring dan komentar yang berguna pada kode di editor tanpa mengubah logikanya."],
+  ["target", "Buatkan soal latihan", "Buatkan 5 soal latihan Python dari mudah ke menantang beserta tabel ringkasan topik dan tingkat kesulitannya. Jangan tampilkan jawabannya dulu."]
+];
+function greeting() {
+  const d = document.createElement("div"); d.className = "greet";
+  d.innerHTML = `<div class="jav">${ic("sparkle")}</div><h3>Halo, aku Joo.</h3>
+  <p>Aku bisa menjelaskan kode, mencari bug, mengoptimalkan program, atau membuatkan latihan. Pilih salah satu atau tulis pertanyaanmu sendiri.</p>
+  <div class="chips">${QUICK.map((q, k) => `<button class="chip" data-q="${k}">${ic(q[0])}${q[1]}</button>`).join("")}</div>`;
+  return d;
+}
+function addUser(text) {
+  const d = document.createElement("div"); d.className = "m user";
+  const b = document.createElement("div"); b.className = "bub"; b.textContent = text; d.appendChild(b);
+  msgsEl.appendChild(d); return d;
+}
+function addAi(content, typing) {
+  const d = document.createElement("div"); d.className = "m ai";
+  d.innerHTML = `<div class="jav">${ic("sparkle")}</div><div class="mc"><div class="mb md"></div></div>`;
+  const body = d.querySelector(".mb");
+  if (typing) body.innerHTML = '<div class="typing"><i></i><i></i><i></i></div>'; else body.innerHTML = md(content);
+  msgsEl.appendChild(d); return { el: d, body };
+}
+function finishAi(ai, content) {
+  const a = document.createElement("div"); a.className = "ma";
+  a.innerHTML = `<button class="ibtn" data-act="copymsg" title="Salin jawaban" aria-label="Salin jawaban">${ic("copy")}</button>`;
+  a.firstChild.onclick = () => copyText(content, "Jawaban disalin");
+  ai.el.querySelector(".mc").appendChild(a);
+}
+function renderAll() {
+  msgsEl.innerHTML = "";
+  if (!msgs.length) { msgsEl.appendChild(greeting()); return; }
+  msgs.forEach(m => { if (m.role === "user") addUser(m.content); else finishAi(addAi(m.content), m.content); });
+  toBottom();
+}
+renderAll();
+
+$("jclear").onclick = () => { if (busy && ctrl) ctrl.abort(); msgs = []; saveChat(); renderAll(); };
+msgsEl.addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if (chip) { const q = QUICK[+chip.dataset.q]; if (!cm.getValue().trim() && chip.dataset.q < 4) { toast("Tulis kode di editor dulu"); return; } send(q[2]); return; }
+  const btn = e.target.closest(".cba button"); if (!btn) return;
+  const code = btn.closest(".cb").querySelector("pre").textContent;
+  const act = btn.dataset.act;
+  if (act === "copy") copyText(code, "Kode disalin");
+  else if (act === "use" || act === "run") {
+    cm.setValue(code); toast(act === "use" ? "Kode dipindah ke editor (Ctrl+Z untuk batal)" : "Menjalankan kode...");
+    if (act === "run") { if (window.innerWidth <= 900) closeJoo(); run(); }
+  }
+});
+jin.addEventListener("input", () => { jin.style.height = "auto"; jin.style.height = Math.min(jin.scrollHeight, 140) + "px"; });
+jin.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); sendFromInput(); } });
+function sendFromInput() { const t = jin.value; if (t.trim()) { jin.value = ""; jin.style.height = "auto"; send(t); } }
+sendBtn.onclick = () => {
+  if (busy) { ctrl && ctrl.abort(); return; }
+  sendFromInput();
+};
+function setBusy(b) {
+  busy = b; sendBtn.classList.toggle("stopping", b);
+  sendBtn.innerHTML = ic(b ? "stop" : "send"); sendBtn.setAttribute("aria-label", b ? "Hentikan" : "Kirim");
+}
+
+async function send(text) {
+  text = String(text).trim();
+  if (!text || busy) return;
+  if (!joo.classList.contains("on")) openJoo();
+  msgsEl.querySelectorAll("[data-tmp]").forEach(x => x.remove());
+  if (!msgs.length) msgsEl.innerHTML = "";
+  msgs.push({ role: "user", content: text });
+  const uEl = addUser(text);
+  const ai = addAi("", true);
+  toBottom(); setBusy(true);
+  ctrl = new AbortController();
+  let acc = "", failed = null;
+  try {
+    const useCtx = $("ctx").checked;
+    const r = await fetch("/api/chat", {
+      method: "POST", headers: { "Content-Type": "application/json" }, signal: ctrl.signal,
+      body: JSON.stringify({
+        messages: msgs.slice(-12).map(({ role, content }) => ({ role, content })),
+        code: useCtx ? cm.getValue() : "",
+        output: useCtx ? lastOut.slice(-2000) : ""
+      })
+    });
+    if (!r.ok) {
+      let m = "Joo sedang bermasalah. Coba lagi sebentar.";
+      try { const j = await r.json(); if (j.error) m = j.error; } catch (e) {}
+      throw new Error(m);
+    }
+    if (!r.body) { acc = await r.text(); ai.body.innerHTML = md(acc); }
+    else {
+      const rd = r.body.getReader(), dc = new TextDecoder();
+      while (true) {
+        const { done, value } = await rd.read();
+        if (done) break;
+        acc += dc.decode(value, { stream: true });
+        const nb = nearBottom();
+        ai.body.innerHTML = md(acc);
+        if (nb) toBottom();
+      }
+      acc += dc.decode();
+      ai.body.innerHTML = md(acc);
+    }
+    if (!acc.trim()) throw new Error("Joo tidak mengirim jawaban. Coba lagi.");
+  } catch (e) {
+    if (e.name !== "AbortError") failed = e.message || "Terjadi kesalahan.";
+  }
+  setBusy(false); ctrl = null;
+  if (failed) {
+    ai.el.remove(); uEl.remove(); msgs.pop();
+    const d = addAi("", false); d.body.classList.add("err"); d.body.textContent = failed;
+    d.el.dataset.tmp = "1";
+    jin.value = text; jin.dispatchEvent(new Event("input"));
+    toBottom(); return;
+  }
+  if (!acc.trim()) { ai.el.remove(); return; }
+  msgs.push({ role: "assistant", content: acc }); saveChat();
+  finishAi(ai, acc); toBottom();
+}
+})();
+</script>
+</body>
+</html>
