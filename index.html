@@ -18,11 +18,12 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{font-family:'Fredoka',system-ui,sans-serif;color:var(--ink);background:var(--bg);display:flex;flex-direction:column;min-height:100vh;font-size:16px}
+body{font-family:'Fredoka',system-ui,sans-serif;color:var(--ink);background:var(--bg);display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;font-size:16px}
 button,select,input,textarea{font-family:inherit;color:inherit}
 .i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .wrap{width:min(1320px,100% - 28px);margin-inline:auto}
 
+/* header */
 header{padding:14px 0 12px}
 header .wrap{display:flex;align-items:center;gap:10px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);margin-right:auto}
@@ -35,6 +36,7 @@ header .wrap{display:flex;align-items:center;gap:10px}
 .status.busy .dot{background:var(--violet)}
 @keyframes pulse{50%{transform:scale(1.5)}}
 
+/* buttons */
 .btn{cursor:pointer;font-weight:600;font-size:.95rem;background:#fff;border:var(--bd);border-radius:12px;padding:6px 12px;box-shadow:2px 2px 0 var(--ink);display:inline-flex;align-items:center;gap:7px;transition:transform .08s,box-shadow .08s;white-space:nowrap;line-height:1.2}
 .btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
 .btn:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
@@ -46,8 +48,9 @@ header .wrap{display:flex;align-items:center;gap:10px}
 .btn.sm{padding:4px 10px;font-size:.85rem;box-shadow:2px 2px 0 var(--ink)}
 .btn[hidden]{display:none}
 
+/* layout */
 main{flex:1;padding:0 0 16px;min-height:0}
-main .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;height:calc(100vh - 140px);min-height:480px}
+main .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;height:calc(100vh - 140px);height:calc(100dvh - 140px);min-height:480px}
 .card{background:#fff;border:var(--bd);border-radius:18px;box-shadow:5px 5px 0 var(--ink);display:flex;flex-direction:column;overflow:hidden;min-width:0;min-height:0}
 .bar{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:var(--bd);flex-wrap:wrap}
 .sp{flex:1}
@@ -56,6 +59,7 @@ main .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;height:calc(100
 .foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 12px;border-top:var(--bd);font-size:.85rem;font-weight:500;color:var(--muted);background:#fff}
 .foot .btn{padding:1px 8px;font-size:.8rem}
 
+/* editor */
 .edwrap{position:relative;flex:1;min-height:0;background:var(--code)}
 .CodeMirror{position:absolute;inset:0;height:100%;font-family:'Space Mono',monospace;font-size:15px;line-height:1.6;background:var(--code);color:#f4f0ff}
 .CodeMirror-gutters{background:#1b1440;border-right:2px solid #3a2f78}
@@ -75,6 +79,7 @@ main .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;height:calc(100
 .cm-s-jap .cm-meta{color:#ffa45c}
 .cm-s-jap .CodeMirror-matchingbracket{background:rgba(255,207,63,.3);color:#fff!important}
 
+/* output */
 .tabs{display:flex;gap:4px;background:var(--violet-soft);border:2px solid var(--ink);border-radius:11px;padding:2px}
 .tab{cursor:pointer;font-weight:600;font-size:.9rem;border:0;border-radius:8px;padding:4px 14px;background:transparent}
 .tab[aria-selected="true"]{background:var(--ink);color:#fff}
@@ -91,7 +96,12 @@ main .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;height:calc(100
 .pill.ok{background:#c8f6e0}.pill.err{background:#ffd3d3}
 .meta{display:flex;gap:8px;align-items:center}
 .askerr{margin-top:12px;font-family:'Fredoka',sans-serif}
+.ttl{font-size:1rem;padding:2px 4px}
+.stdin-inline{font:inherit;color:var(--violet);font-weight:700;background:#f3f0ff;border:0;border-bottom:2px dashed var(--violet);border-radius:4px 4px 0 0;padding:0 4px;min-width:3ch;max-width:100%;outline:0}
+.stdin-inline:focus{background:#e6e0ff}
+.stdin-inline:focus-visible{outline:0}
 
+/* Joo AI drawer */
 .scrim{position:fixed;inset:0;background:rgba(31,27,58,.35);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
 .scrim.on{opacity:1;pointer-events:auto}
 .joo{position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);background:#fff;border-left:var(--bd);z-index:21;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .25s cubic-bezier(.3,.9,.3,1);box-shadow:-6px 0 0 rgba(31,27,58,.15)}
@@ -136,6 +146,7 @@ main .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;height:calc(100
 .send.stopping{background:var(--coral);color:var(--ink)}
 .send[disabled]{opacity:.45;cursor:not-allowed}
 
+/* markdown */
 .md{font-size:.97rem;line-height:1.62;word-break:break-word}
 .md>*:first-child{margin-top:0}.md>*:last-child{margin-bottom:0}
 .md p{margin:.55em 0}
@@ -169,14 +180,31 @@ main .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;height:calc(100
 .toast.on{transform:translate(-50%,0)}
 
 @media (max-width:900px){
-  main .wrap{grid-template-columns:1fr;height:auto}
-  .card.ed{height:56vh;min-height:360px}
-  .card.out{height:46vh;min-height:300px}
+  header{padding:10px 0}
+  main .wrap{grid-template-columns:1fr;height:auto;gap:16px}
+  .card.ed{height:60vh;height:60dvh;min-height:380px}
+  .card.out{height:44vh;height:44dvh;min-height:300px}
   .status span{display:none}
-  .status{padding:4px 8px}
-  .joo{width:100vw;border-left:0}
+  .status{padding:6px 9px}
+  .joo{width:100vw;border-left:0;height:100vh;height:100dvh}
+  .jf{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+  .fname,#jin,.stdin-inline{font-size:16px}
 }
-@media (max-width:560px){ .btn .lbl{display:none} .btn.run .lbl,.btn.stop .lbl,.btn.pri .lbl{display:inline} .fname{width:90px} }
+@media (max-width:700px){
+  .btn .lbl{display:none}
+  .btn.run .lbl,.btn.stop .lbl,.btn.pri .lbl{display:inline}
+  .card{box-shadow:4px 4px 0 var(--ink);border-radius:16px}
+  .ed .bar{flex-wrap:nowrap;gap:6px;padding:8px}
+  .ed .bar .sp{display:none}
+  .fname{flex:1;width:auto;min-width:0}
+  .btn{padding:6px 9px}
+  .btn.run{padding:7px 14px}
+  .logo svg{width:32px;height:32px}
+  .logo b{font-size:1.4rem}
+  header .wrap{gap:8px}
+  .foot{font-size:.8rem;flex-wrap:wrap}
+  #lines{display:none}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -247,19 +275,12 @@ main .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;height:calc(100
 
     <section class="card out" aria-label="Hasil">
       <div class="bar">
-        <div class="tabs" role="tablist">
-          <button class="tab" role="tab" id="tOut" aria-selected="true" aria-controls="pOut">Output</button>
-          <button class="tab" role="tab" id="tIn" aria-selected="false" aria-controls="pIn">Input</button>
-        </div>
+        <strong class="ttl">Output</strong>
         <span class="sp"></span>
         <button class="btn sm" id="copy" title="Salin output"><svg class="i"><use href="#i-copy"/></svg><span class="lbl">Salin</span></button>
         <button class="btn sm" id="clear" title="Bersihkan output"><svg class="i"><use href="#i-trash"/></svg><span class="lbl">Bersihkan</span></button>
       </div>
-      <div class="pane on" id="pOut" role="tabpanel" aria-labelledby="tOut"><div id="out" aria-live="polite"></div></div>
-      <div class="pane" id="pIn" role="tabpanel" aria-labelledby="tIn">
-        <textarea id="stdin" placeholder="Isi jawaban untuk input() di sini, satu baris untuk satu input()." spellcheck="false"></textarea>
-        <div class="hint">Kodemu pakai input()? Tulis jawabannya di sini sebelum menekan Run.</div>
-      </div>
+      <div class="pane on" id="pOut"><div id="out" aria-live="polite"></div></div>
       <div class="foot">
         <span class="meta"><span class="pill" id="state">Belum jalan</span><span id="time"></span></span>
         <span>Python 3.12</span>
@@ -293,42 +314,53 @@ main .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;height:calc(100
 <!-- Worker Python (jalan di background supaya halaman tidak freeze) -->
 <script id="worker-src" type="text/plain">
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js");
-let py;
+let py, SAB = null, ctrl = null, data = null, replay = [];
 const BOOT = `
-import builtins, sys
-_Q = []
-def _set_q(l):
-    _Q[:] = [str(x) for x in l]
+import builtins, sys, js
+_REPLAY = False
+class _NeedInput(BaseException):
+    pass
+def _getline(prompt=""):
+    sys.stdout.flush()
+    prompt = str(prompt)
+    v = js.askInput(prompt)
+    if v is None:
+        raise _NeedInput()
+    v = str(v)
+    if _REPLAY:
+        print(prompt + v)
+    return v
 class _In:
     def readline(self, *a):
-        return (_Q.pop(0) + chr(10)) if _Q else ""
+        return _getline() + chr(10)
     def read(self, *a):
-        r = chr(10).join(_Q)
-        _Q.clear()
-        return r
+        return self.readline()
     def readlines(self, *a):
-        out = []
-        while _Q:
-            out.append(_Q.pop(0) + chr(10))
-        return out
+        return [self.readline()]
     def __iter__(self):
         return self
     def __next__(self):
-        l = self.readline()
-        if not l:
-            raise StopIteration
-        return l
+        return self.readline()
     def isatty(self):
         return False
 sys.stdin = _In()
 def _input(prompt=""):
-    if not _Q:
-        raise EOFError("input() butuh data. Isi dulu di tab Input.")
-    v = _Q.pop(0)
-    print(str(prompt) + v)
-    return v
+    return _getline(prompt)
 builtins.input = _input
 `;
+// Dipanggil dari Python setiap kali program minta input
+self.askInput = (prompt) => {
+  if (SAB) {                       // mode interaktif: berhenti dan tunggu jawaban dari halaman
+    if (prompt) postMessage({ t: "out", d: prompt });
+    Atomics.store(ctrl, 0, 0);
+    postMessage({ t: "need" });
+    Atomics.wait(ctrl, 0, 0);
+    return new TextDecoder().decode(data.slice(0, ctrl[1]));
+  }
+  if (replay.length) return replay.shift();   // mode cadangan: putar ulang dengan jawaban yang sudah ada
+  if (prompt) postMessage({ t: "out", d: prompt });
+  return null;
+};
 (async () => {
   py = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/" });
   py.setStdout({ batched: s => postMessage({ t: "out", d: s + "\n" }) });
@@ -338,11 +370,12 @@ builtins.input = _input
 })().catch(e => postMessage({ t: "fatal", d: String(e) }));
 
 onmessage = async (ev) => {
-  const { code, stdin } = ev.data;
-  let ok = true;
+  const { code, sab, lines } = ev.data;
+  if (sab) { SAB = sab; ctrl = new Int32Array(sab, 0, 2); data = new Uint8Array(sab, 8); } else SAB = null;
+  replay = lines ? lines.slice() : [];
+  py.globals.set("_REPLAY", !SAB);
+  let ok = true, need = false;
   try {
-    const lines = stdin ? stdin.replace(/\n$/, "").split("\n") : [];
-    py.globals.get("_set_q")(lines);
     await py.loadPackagesFromImports(code, {
       messageCallback: m => postMessage({ t: "pkg", d: m }),
       errorCallback: () => {}
@@ -351,14 +384,17 @@ onmessage = async (ev) => {
     g.set("__name__", "__main__");
     try { await py.runPythonAsync(code, { globals: g }); } finally { g.destroy(); }
   } catch (e) {
-    ok = false;
     let m = String(e.message || e);
-    const i = m.indexOf('File "<exec>"');
-    if (i >= 0) m = "Traceback (most recent call last):\n  " + m.slice(i);
-    postMessage({ t: "err", d: m.trim() + "\n" });
+    if (m.includes("_NeedInput")) need = true;
+    else {
+      ok = false;
+      const i = m.indexOf('File "<exec>"');
+      if (i >= 0) m = "Traceback (most recent call last):\n  " + m.slice(i);
+      postMessage({ t: "err", d: m.trim() + "\n" });
+    }
   }
   try { py.runPython("import sys; sys.stdout.flush(); sys.stderr.flush()"); } catch (e) {}
-  postMessage({ t: "done", ok });
+  if (need) postMessage({ t: "need" }); else postMessage({ t: "done", ok });
 };
 </script>
 
@@ -381,6 +417,7 @@ let tt;
 function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2000); }
 const copyText = (s, msg) => (navigator.clipboard ? navigator.clipboard.writeText(s) : Promise.reject()).then(() => toast(msg), () => toast("Gagal menyalin"));
 
+/* ================= EDITOR ================= */
 const b64 = { enc: s => btoa(unescape(encodeURIComponent(s))), dec: s => decodeURIComponent(escape(atob(s))) };
 let initial = store.get("japython:code");
 const h = location.hash.match(/^#c=(.+)$/);
@@ -439,6 +476,7 @@ $("share").onclick = () => {
   copyText(url, url.length > 8000 ? "Link disalin, tapi sangat panjang" : "Link berbagi disalin");
 };
 
+/* ================= OUTPUT ================= */
 const out = $("out");
 const EMPTY = `<div class="empty">${ic("terminal")}<div>Tekan <b>Run</b> atau <b>Ctrl + Enter</b><br>untuk melihat hasil kodenya di sini.</div></div>`;
 let hasOut = false, lastOut = "";
@@ -456,15 +494,44 @@ function clearOut() { out.innerHTML = EMPTY; hasOut = false; lastOut = ""; $("ti
 $("clear").onclick = clearOut;
 $("copy").onclick = () => hasOut && lastOut ? copyText(lastOut, "Output disalin") : toast("Belum ada output");
 
-function tab(which) {
-  const o = which === "out";
-  $("tOut").setAttribute("aria-selected", o); $("tIn").setAttribute("aria-selected", !o);
-  $("pOut").classList.toggle("on", o); $("pIn").classList.toggle("on", !o);
-}
-$("tOut").onclick = () => tab("out"); $("tIn").onclick = () => tab("in");
 
 function setStatus(cls, text) { $("status").className = "status " + cls; $("statusText").textContent = text; }
 
+/* ================= INPUT INTERAKTIF ================= */
+// Dengan header COOP/COEP (vercel.json), worker bisa berhenti dan menunggu jawaban (seperti terminal asli).
+// Kalau browser tidak mendukung, otomatis pakai mode cadangan: program diputar ulang dengan jawaban yang sudah ada.
+let SABBuf = null, sctrl = null, sdata = null, answers = [], runCode = "";
+if (window.crossOriginIsolated && typeof SharedArrayBuffer !== "undefined") {
+  SABBuf = new SharedArrayBuffer(8 + 65536); sctrl = new Int32Array(SABBuf, 0, 2); sdata = new Uint8Array(SABBuf, 8);
+}
+function removeAsk() { const a = out.querySelector(".stdin-inline"); if (a) a.remove(); }
+function askInline() {
+  if (!running) return;
+  removeAsk();
+  const inp = document.createElement("input");
+  inp.className = "stdin-inline"; inp.type = "text"; inp.size = 2; inp.spellcheck = false;
+  inp.autocomplete = "off"; inp.setAttribute("autocapitalize", "off"); inp.setAttribute("aria-label", "Input untuk program");
+  inp.addEventListener("input", () => { inp.size = Math.max(2, inp.value.length + 1); });
+  inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); submitAsk(inp.value); } });
+  hasOut = true; out.appendChild(inp);
+  setState("Menunggu input..."); setStatus("busy", "Menunggu input");
+  inp.focus({ preventScroll: true }); out.scrollTop = out.scrollHeight;
+}
+function submitAsk(v) {
+  removeAsk(); setState("Berjalan..."); setStatus("busy", "Menjalankan");
+  if (SABBuf) {
+    write(v + "\n");
+    const bytes = new TextEncoder().encode(v).slice(0, 65536);
+    sdata.set(bytes); sctrl[1] = bytes.length;
+    Atomics.store(sctrl, 0, 1); Atomics.notify(sctrl, 0);
+  } else {
+    answers.push(v); out.textContent = ""; lastOut = ""; hasOut = true;
+    worker.postMessage({ code: runCode, lines: answers.slice() });
+  }
+}
+out.addEventListener("click", () => { const i = out.querySelector(".stdin-inline"); if (i && !String(getSelection())) i.focus(); });
+
+/* ================= WORKER ================= */
 let worker, ready = false, running = false, t0 = 0, tick;
 function startWorker() {
   ready = false; $("run").disabled = true; setStatus("", "Memuat Python...");
@@ -474,6 +541,7 @@ function startWorker() {
     if (m.t === "ready") { ready = true; $("run").disabled = false; setStatus("ready", "Python siap"); }
     else if (m.t === "out") write(m.d);
     else if (m.t === "err") write(m.d, "e");
+    else if (m.t === "need") askInline();
     else if (m.t === "pkg") setState("Memuat paket...");
     else if (m.t === "fatal") { setStatus("", "Gagal memuat"); toast("Python gagal dimuat. Cek internet lalu refresh."); }
     else if (m.t === "done") finish(m.ok);
@@ -481,7 +549,7 @@ function startWorker() {
   worker.onerror = e => { write("Terjadi masalah: " + (e.message || "worker error") + "\n", "e"); if (running) finish(false); };
 }
 function finish(ok) {
-  running = false; clearInterval(tick);
+  removeAsk(); running = false; clearInterval(tick);
   $("time").textContent = ((performance.now() - t0) / 1000).toFixed(2) + " detik";
   setState(ok ? "Selesai" : "Ada error", ok ? "ok" : "err");
   if (ok) write("\n[program selesai]\n", "ok");
@@ -496,16 +564,16 @@ function finish(ok) {
 function run() {
   if (!ready || running) return;
   if (!cm.getValue().trim()) { toast("Editor masih kosong"); cm.focus(); return; }
-  running = true; hasOut = true; lastOut = ""; out.textContent = ""; tab("out");
+  running = true; hasOut = true; lastOut = ""; out.textContent = ""; answers = []; runCode = cm.getValue();
   $("run").hidden = true; $("stop").hidden = false;
   setState("Berjalan..."); $("time").textContent = ""; setStatus("busy", "Menjalankan");
   t0 = performance.now();
   tick = setInterval(() => { $("time").textContent = ((performance.now() - t0) / 1000).toFixed(1) + " detik"; }, 100);
-  worker.postMessage({ code: cm.getValue(), stdin: $("stdin").value.replace(/\r/g, "") });
+  worker.postMessage({ code: runCode, sab: SABBuf });
 }
 function stop() {
   if (!running) return;
-  worker.terminate(); running = false; clearInterval(tick);
+  removeAsk(); worker.terminate(); running = false; clearInterval(tick);
   write("\n[program dihentikan]\n", "e");
   $("run").hidden = false; $("stop").hidden = true; setState("Dihentikan", "err");
   startWorker();
@@ -519,6 +587,7 @@ document.addEventListener("keydown", e => {
 });
 startWorker();
 
+/* ================= MARKDOWN ================= */
 const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const KW = new Set("False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield match case".split(" "));
 const BI = new Set("print input len range int float str list dict set tuple bool sum min max abs sorted reversed enumerate zip map filter open type isinstance super self cls round any all format repr id iter next".split(" "));
@@ -618,6 +687,7 @@ function md(src) {
   return html;
 }
 
+/* ================= JOO AI ================= */
 const joo = $("joo"), msgsEl = $("msgs"), jin = $("jin"), sendBtn = $("send");
 let msgs = [];
 try { const s = JSON.parse(store.get("japython:chat", "[]")); if (Array.isArray(s)) msgs = s.filter(x => x && (x.role === "user" || x.role === "assistant") && typeof x.content === "string"); } catch (e) {}
